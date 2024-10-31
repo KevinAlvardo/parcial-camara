@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.os.Bundle
 import android.widget.Button
 import android.widget.SeekBar
@@ -130,17 +133,57 @@ class PhotoCaptureActivity : AppCompatActivity() {
 
     private fun applyFilterToImage(photoFile: File) {
         val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
-        val filteredBitmap = applyNaturalColorFilter(bitmap)
+        val orientedBitmap = adjustBitmapOrientation(photoFile.absolutePath, bitmap)
+        val filteredBitmap = applyNaturalColorFilter(orientedBitmap)
         FileOutputStream(photoFile).use { out ->
             filteredBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
         }
     }
-
+    // Función para ajustar la orientación del Bitmap
+    private fun adjustBitmapOrientation(filePath: String, bitmap: Bitmap): Bitmap {
+        val ei = androidx.exifinterface.media.ExifInterface(filePath)
+        val orientation = ei.getAttributeInt(androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION, androidx.exifinterface.media.ExifInterface.ORIENTATION_UNDEFINED)
+        return when (orientation) {
+            androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+            androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+            androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+            else -> bitmap
+        }
+    }
+    // Función para rotar el Bitmap según el ángulo
+    private fun rotateBitmap(bitmap: Bitmap, angle: Float): Bitmap {
+        val matrix = android.graphics.Matrix().apply { postRotate(angle) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
     private fun applyNaturalColorFilter(bitmap: Bitmap): Bitmap {
-        // Aplica el filtro para mejorar colores naturales (aumentando saturación y contraste)
-        // Aquí se puede utilizar RenderScript o algún otro método de procesamiento de imágenes
-        // Por ahora, solo devuelve el mismo bitmap (reemplazar con lógica de filtrado)
-        return bitmap
+        val width = bitmap.width
+        val height = bitmap.height
+        val resultBitmap = Bitmap.createBitmap(width, height, bitmap.config)
+
+        val canvas = android.graphics.Canvas(resultBitmap)
+        val paint = Paint()
+
+        // Ajuste de saturación y contraste
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(1.5f)  // Aumentar la saturación
+        val contrast = 1.2f
+        val translate = (-0.5f * contrast + 0.5f) * 255f
+
+        colorMatrix.postConcat(
+            ColorMatrix(
+                floatArrayOf(
+                    contrast, 0f, 0f, 0f, translate,
+                    0f, contrast, 0f, 0f, translate,
+                    0f, 0f, contrast, 0f, translate,
+                    0f, 0f, 0f, 1f, 0f
+                )
+            )
+        )
+
+        paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
+        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+
+        return resultBitmap
     }
 
     private fun toggleFilter() {

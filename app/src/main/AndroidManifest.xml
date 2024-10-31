@@ -30,6 +30,8 @@
         <activity android:name=".PlayVideoActivity"/>
         <activity android:name=".VideoCaptureActivity"/>
         <activity android:name=".ViewImageActivity"/>
+        <activity android:name=".PhotoViewerActivity" />
+        <activity android:name=".VideoPlayerActivity" />
     </application>
 
 </manifest>

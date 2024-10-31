@@ -55,6 +55,21 @@ class GalleryAdapter(private val mediaList: List<MediaItem>) : RecyclerView.Adap
             } else {
                 imageThumbnail.setImageURI(Uri.fromFile(File(mediaItem.filePath)))
             }
+
+            // Configurar click en el item para abrir la actividad correspondiente
+            itemView.setOnClickListener {
+                val context = itemView.context
+                val intent = if (mediaItem.isVideo) {
+                    Intent(context, VideoPlayerActivity::class.java).apply {
+                        putExtra("VIDEO_PATH", mediaItem.filePath)
+                    }
+                } else {
+                    Intent(context, PhotoViewerActivity::class.java).apply {
+                        putExtra("PHOTO_PATH", mediaItem.filePath)
+                    }
+                }
+                context.startActivity(intent)
+            }
         }
     }
 }

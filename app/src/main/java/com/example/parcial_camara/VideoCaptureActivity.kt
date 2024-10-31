@@ -26,10 +26,12 @@ class VideoCaptureActivity : AppCompatActivity() {
     private lateinit var previewView: PreviewView
     private lateinit var zoomSeekBar: SeekBar
     private lateinit var btnFlashToggle: Button
+    private lateinit var btnApplyFilter: Button
     private var activeRecording: Recording? = null
     private var camera: Camera? = null
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var isFlashEnabled = false
+    private var isFilterEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ class VideoCaptureActivity : AppCompatActivity() {
         val btnRecordVideo = findViewById<Button>(R.id.btnRecordVideo)
         val btnSwitchCamera = findViewById<Button>(R.id.btnSwitchCamera)
         btnFlashToggle = findViewById(R.id.btnFlashToggle)
+        btnApplyFilter = findViewById(R.id.btnApplyFilter)
         zoomSeekBar = findViewById(R.id.zoomSeekBar)
 
         startCamera()
@@ -59,6 +62,10 @@ class VideoCaptureActivity : AppCompatActivity() {
 
         btnFlashToggle.setOnClickListener {
             toggleFlash()
+        }
+
+        btnApplyFilter.setOnClickListener {
+            toggleFilter()
         }
 
         zoomSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -90,8 +97,9 @@ class VideoCaptureActivity : AppCompatActivity() {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
 
-            // Configuración inicial del flash
+            // Configuración inicial del flash y filtro
             updateFlashMode()
+            updateFilterMode()
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -125,6 +133,19 @@ class VideoCaptureActivity : AppCompatActivity() {
     private fun updateFlashMode() {
         camera?.cameraControl?.enableTorch(isFlashEnabled)
         btnFlashToggle.text = if (isFlashEnabled) "Flash On" else "Flash Off"
+    }
+
+    private fun toggleFilter() {
+        isFilterEnabled = !isFilterEnabled
+        updateFilterMode()
+        btnApplyFilter.text = if (isFilterEnabled) "Filtro: Activado" else "Filtro: Desactivado"
+    }
+
+    private fun updateFilterMode() {
+        camera?.cameraControl?.apply {
+            val exposureCompensation = if (isFilterEnabled) 2 else 0 // Ajuste de exposición
+            setExposureCompensationIndex(exposureCompensation)
+        }
     }
 
     private fun stopRecording() {

@@ -4,41 +4,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_image"
     tools:context=".MainActivity">
 
+    <!-- Texto de agradecimiento en la parte superior -->
+    <TextView
+        android:id="@+id/tvThanksMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Gracias por usar mi aplicación para turismo ecológico. ATTE: Kevin Gerardo Alvarado Moran"
+        android:textAlignment="center"
+        android:textColor="#2e4053 "
+        android:textSize="20sp"
+        android:padding="16dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Botón para Capturar Foto -->
     <Button
         android:id="@+id/btnCapturePhoto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Capturar Foto"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="1dp"
+        android:text="Capturar Foto"
+        app:layout_constraintBottom_toTopOf="@+id/btnRecordVideo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvThanksMessage" />
 
+    <!-- Botón para Grabar Video -->
     <Button
         android:id="@+id/btnRecordVideo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Grabar Video"
-        app:layout_constraintTop_toBottomOf="@+id/btnCapturePhoto"
+        app:layout_constraintTop_toBottomOf="@id/btnCapturePhoto"
+        app:layout_constraintBottom_toTopOf="@+id/btnViewGallery"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
 
+    <!-- Botón para Ver Galería -->
     <Button
         android:id="@+id/btnViewGallery"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Ver Galería"
-        app:layout_constraintTop_toBottomOf="@+id/btnRecordVideo"
+        app:layout_constraintTop_toBottomOf="@id/btnRecordVideo"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="200dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
