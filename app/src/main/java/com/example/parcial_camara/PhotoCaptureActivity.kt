@@ -2,21 +2,20 @@ package com.example.parcial_camara
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
+import java.io.FileOutputStream
 
 class PhotoCaptureActivity : AppCompatActivity() {
 
@@ -25,10 +24,12 @@ class PhotoCaptureActivity : AppCompatActivity() {
     private lateinit var btnSwitchCamera: Button
     private lateinit var zoomSeekBar: SeekBar
     private lateinit var btnFlashToggle: Button
+    private lateinit var btnApplyFilter: Button
     private var camera: Camera? = null
     private var isUsingBackCamera = true
     private lateinit var cameraProvider: ProcessCameraProvider
     private var flashMode = ImageCapture.FLASH_MODE_OFF
+    private var isFilterEnabled = false  // Variable para activar/desactivar el filtro
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +40,8 @@ class PhotoCaptureActivity : AppCompatActivity() {
         btnSwitchCamera = findViewById(R.id.btnSwitchCamera)
         zoomSeekBar = findViewById(R.id.zoomSeekBar)
         btnFlashToggle = findViewById(R.id.btnFlashToggle)
+        btnApplyFilter = findViewById(R.id.btnApplyFilter)
 
-        // Solicitar permisos y configurar la cámara
         requestCameraPermission()
 
         btnCapturePhoto.setOnClickListener {
@@ -53,6 +54,10 @@ class PhotoCaptureActivity : AppCompatActivity() {
 
         btnFlashToggle.setOnClickListener {
             toggleFlashMode()
+        }
+
+        btnApplyFilter.setOnClickListener {
+            toggleFilter()
         }
 
         zoomSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -99,7 +104,7 @@ class PhotoCaptureActivity : AppCompatActivity() {
 
     private fun switchCamera() {
         isUsingBackCamera = !isUsingBackCamera
-        bindCameraUseCases()  // Reinicia las configuraciones de la cámara para aplicar el cambio
+        bindCameraUseCases()
     }
 
     private fun takePhoto() {
@@ -110,6 +115,9 @@ class PhotoCaptureActivity : AppCompatActivity() {
             outputOptions, ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    if (isFilterEnabled) {
+                        applyFilterToImage(photoFile)
+                    }
                     Toast.makeText(applicationContext, "Foto guardada en ${photoFile.absolutePath}", Toast.LENGTH_SHORT).show()
                 }
 
@@ -118,6 +126,26 @@ class PhotoCaptureActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun applyFilterToImage(photoFile: File) {
+        val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+        val filteredBitmap = applyNaturalColorFilter(bitmap)
+        FileOutputStream(photoFile).use { out ->
+            filteredBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        }
+    }
+
+    private fun applyNaturalColorFilter(bitmap: Bitmap): Bitmap {
+        // Aplica el filtro para mejorar colores naturales (aumentando saturación y contraste)
+        // Aquí se puede utilizar RenderScript o algún otro método de procesamiento de imágenes
+        // Por ahora, solo devuelve el mismo bitmap (reemplazar con lógica de filtrado)
+        return bitmap
+    }
+
+    private fun toggleFilter() {
+        isFilterEnabled = !isFilterEnabled
+        btnApplyFilter.text = if (isFilterEnabled) "Filtro: Activado" else "Filtro: Desactivado"
     }
 
     private fun getOutputDirectory(): File {
@@ -151,14 +179,12 @@ class PhotoCaptureActivity : AppCompatActivity() {
             else -> ImageCapture.FLASH_MODE_OFF
         }
 
-        // Actualizar el texto del botón según el modo de flash
         btnFlashToggle.text = when (flashMode) {
             ImageCapture.FLASH_MODE_OFF -> "Flash Off"
             ImageCapture.FLASH_MODE_ON -> "Flash On"
             else -> "Flash Auto"
         }
 
-        // Actualizar el flash en la configuración de captura de imagen
         imageCapture.flashMode = flashMode
     }
 
