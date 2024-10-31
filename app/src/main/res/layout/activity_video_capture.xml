@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Vista de previsualización de la cámara -->
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/btnCapturePhoto"
+        app:layout_constraintBottom_toTopOf="@+id/btnRecordVideo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -18,31 +19,37 @@
             android:id="@+id/btnFlashToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="272dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:text="Flash Off" />
     </androidx.camera.view.PreviewView>
 
+    <!-- Barra de control para Zoom o Calidad -->
     <SeekBar
         android:id="@+id/zoomSeekBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:max="100"
-        app:layout_constraintBottom_toTopOf="@id/btnCapturePhoto"
+        app:layout_constraintBottom_toTopOf="@id/btnRecordVideo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp"/>
 
+
+    <!-- Cambia `android:max` a "100" si es zoom -->
+
+    <!-- Botón para grabar o detener el video -->
     <Button
-        android:id="@+id/btnCapturePhoto"
+        android:id="@+id/btnRecordVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capturar Foto"
+        android:text="Grabar Video"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
 
+    <!-- Botón para cambiar entre cámaras frontal y trasera -->
     <Button
         android:id="@+id/btnSwitchCamera"
         android:layout_width="wrap_content"
