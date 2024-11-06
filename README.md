@@ -1,4 +1,8 @@
 # Aplicación de Turismo Ecológico
+#video de muestra 
+https://youtu.be/1NBSKAIi5t8
+https://youtu.be/1NBSKAIi5t8
+https://youtu.be/1NBSKAIi5t8
 
 Esta aplicación permite a los usuarios capturar fotos y grabar videos en el contexto del turismo ecológico. Además, incluye una galería para visualizar, seleccionar y eliminar archivos multimedia, junto con opciones de flash y filtros de mejora para optimizar las capturas en exteriores.
 
